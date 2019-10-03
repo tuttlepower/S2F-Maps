@@ -14,6 +14,13 @@
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
         integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
         crossorigin=""></script>
+
+    <script src="https://unpkg.com/esri-leaflet@2.3.0/dist/esri-leaflet.js"
+        integrity="sha512-1tScwpjXwwnm6tTva0l0/ZgM3rYNbdyMj5q6RSQMbNX6EUMhYDE3pMRGZaT41zHEvLoWEK7qFEJmZDOoDMU7/Q=="
+        crossorigin="">
+    </script>
+
+
 </head>
 
 <body>
@@ -30,13 +37,18 @@
         id: 'mapbox.streets'
         }).addTo(mymap);
 
-        L.geoJSON("https://gismaps.osu.edu/arcgis/rest/directories/arcgisoutput/OSUMaps/BaseMap_MapServer/_ags_mapa47f1ee1b37d464e9fa99531eac45056.png", {
-        style: function (feature) {
-        return {color: feature.properties.color};
-        }
-        }).bindPopup(function (layer) {
-        return layer.feature.properties.description;
+
+        var url =
+        'https://gismaps.osu.edu/arcgis/rest/services/OSUMaps/BaseMap/MapServer';
+
+        L.esri.dynamicMapLayer({
+        url: url,
+        opacity: 0.50,
+        useCors: false
         }).addTo(mymap);
+        
+
+
 
 
         </script>
