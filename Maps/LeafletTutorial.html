@@ -19,6 +19,13 @@
         integrity="sha512-1tScwpjXwwnm6tTva0l0/ZgM3rYNbdyMj5q6RSQMbNX6EUMhYDE3pMRGZaT41zHEvLoWEK7qFEJmZDOoDMU7/Q=="
         crossorigin="">
     </script>
+    <!-- Load Esri Leaflet Geocoder from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.14/dist/esri-leaflet-geocoder.css"
+        integrity="sha512-v5YmWLm8KqAAmg5808pETiccEohtt8rPVMGQ1jA6jqkWVydV5Cuz3nJ9fQ7ittSxvuqsvI9RSGfVoKPaAJZ/AQ=="
+        crossorigin="">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@2.2.14/dist/esri-leaflet-geocoder.js"
+        integrity="sha512-uK5jVwR81KVTGe8KpJa1QIN4n60TsSV8+DPbL5wWlYQvb0/nYNgSOg9dZG6ViQhwx/gaMszuWllTemL+K+IXjg=="
+        crossorigin=""></script>
 
 
 </head>
@@ -37,7 +44,7 @@
         id: 'mapbox.streets'
         }).addTo(mymap);
 
-        //imports basemap, all buildings trees etc. 
+        //imports basemap, all buildings trees etc.
         //var url =
         //'https://gismaps.osu.edu/arcgis/rest/services/OSUMaps/BaseMap/MapServer';
 
@@ -48,17 +55,57 @@
         //}).addTo(mymap);
 
         // Testing
-        
-        
+
+
         //imports Buildings only
         var url =
         'https://gismaps.osu.edu/arcgis/rest/services/OSUMaps/extractService/MapServer/27';
 
         L.esri.featureLayer({
         url: url,
-        opacity: 0.50,
-        color:'red',
-        useCors: false
+        opacity: 1.0,
+        useCors: false,
+        style: function (feature) {
+        if (feature.properties.BuildMaint === 'FOD') {
+        return { color: 'red', weight: .1 };
+        } else if (feature.properties.BuildMaint === 'Student Life') {
+        return { color: 'blue', weight: .1 };
+        } else if (feature.properties.BuildMaint === 'OSUWMC') {
+        return { color: 'green', weight: .1 };
+        } else {
+        return { color: 'grey', weight: .1 };}}
+        
+        }).addTo(mymap);
+
+        //attempts to hover 
+        function onEachFeature(feature, layer) {
+		var popupContent = "<p>I started out as a GeoJSON " +
+				feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
+		if (feature.properties && feature.properties.popupContent) {
+			popupContent += feature.properties.popupContent;
+		}
+		layer.bindPopup(popupContent);
+	}
+
+
+        
+
+        //inserts generic searchbar
+        var arcgisOnline = L.esri.Geocoding.arcgisOnlineProvider();
+
+        L.esri.Geocoding.geosearch({
+        providers: [
+        arcgisOnline,
+        L.esri.Geocoding.featureLayerProvider({
+        url: 'https://services.arcgis.com/uCXeTVveQzP4IIcx/arcgis/rest/services/gisday/FeatureServer/0/',
+        searchFields: ['Name', 'Organization'],
+        label: 'GIS Day Events',
+        bufferRadius: 5000,
+        formatSuggestion: function (feature) {
+        return feature.properties.Name + ' - ' + feature.properties.Organization;
+        }
+        })
+        ]
         }).addTo(mymap);
 
 
