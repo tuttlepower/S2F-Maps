@@ -74,7 +74,7 @@
         }).addTo(map);
 
         earthquakes.bindPopup(function (layer) {
-            return L.Util.template('<p>{BLDG_NAME}</p>', layer.feature.properties);
+            return L.Util.template('<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p></div>', layer.feature.properties);
         });
     </script>
 
