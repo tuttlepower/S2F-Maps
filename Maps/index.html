@@ -2,8 +2,12 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Custom popups</title>
+    <title>S2F Map</title>
+    
+    <!-- Inserts block O to nav bar -->
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="shortcut icon" type="image/x-icon"
+        href="http://www.osu.edu/assets/web/navbar/osu_navbar/images/favicon.ico"/>
 
     <!-- Load Leaflet from CDN -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
@@ -41,13 +45,17 @@
     <div id="map"></div>
 
     <script>
+        //creates variable called map and sets the view to Ohio State's campus(latlong) with a zoom level of 15
         var map = L.map('map').setView([40.000823481406954, -83.02537039514612], 15);
+        
         //Sets basemap color and features 
-
         L.esri.basemapLayer('Gray').addTo(map);
 
-        var earthquakes = L.esri.featureLayer({
+        //creates variable "buildings" and gives it the value of the specific mapserver(buildings)
+        var buildings = L.esri.featureLayer({
             url: 'https://gismaps.osu.edu/arcgis/rest/services/AGOL/BasemapAsFeatures/MapServer/33',
+
+            //assigns colors to different building entities based on maintenance shop
             style: function (feature) {
                 if (feature.properties.BuildMaint === 'FOD') {
                     return {
@@ -72,8 +80,10 @@
                 }
             },
         }).addTo(map);
-
-        earthquakes.bindPopup(function (layer) {
+        
+        //binds popups to the buildings layer
+        buildings.bindPopup(function (layer) {
+            //this determines what goes inside the popup for each building
             return L.Util.template('<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p></div>', layer.feature.properties);
         });
     </script>
