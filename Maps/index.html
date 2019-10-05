@@ -3,11 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <title>S2F Map</title>
-    
+
     <!-- Inserts block O to nav bar -->
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <link rel="shortcut icon" type="image/x-icon"
-        href="http://www.osu.edu/assets/web/navbar/osu_navbar/images/favicon.ico"/>
+        href="http://www.osu.edu/assets/web/navbar/osu_navbar/images/favicon.ico" />
 
     <!-- Load Leaflet from CDN -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
@@ -17,10 +17,17 @@
         integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
         crossorigin=""></script>
 
-
     <!-- Load Esri Leaflet from CDN -->
     <script src="https://unpkg.com/esri-leaflet@2.3.0/dist/esri-leaflet.js"
         integrity="sha512-1tScwpjXwwnm6tTva0l0/ZgM3rYNbdyMj5q6RSQMbNX6EUMhYDE3pMRGZaT41zHEvLoWEK7qFEJmZDOoDMU7/Q=="
+        crossorigin=""></script>
+
+    <!-- Load Esri Leaflet Geocoder from CDN, needed for Search Bar -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.14/dist/esri-leaflet-geocoder.css"
+        integrity="sha512-v5YmWLm8KqAAmg5808pETiccEohtt8rPVMGQ1jA6jqkWVydV5Cuz3nJ9fQ7ittSxvuqsvI9RSGfVoKPaAJZ/AQ=="
+        crossorigin="">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@2.2.14/dist/esri-leaflet-geocoder.js"
+        integrity="sha512-uK5jVwR81KVTGe8KpJa1QIN4n60TsSV8+DPbL5wWlYQvb0/nYNgSOg9dZG6ViQhwx/gaMszuWllTemL+K+IXjg=="
         crossorigin=""></script>
 
 
@@ -47,7 +54,7 @@
     <script>
         //creates variable called map and sets the view to Ohio State's campus(latlong) with a zoom level of 15
         var map = L.map('map').setView([40.000823481406954, -83.02537039514612], 15);
-        
+
         //Sets basemap color and features 
         L.esri.basemapLayer('Gray').addTo(map);
 
@@ -80,12 +87,35 @@
                 }
             },
         }).addTo(map);
-        
+
         //binds popups to the buildings layer
         buildings.bindPopup(function (layer) {
+
             //this determines what goes inside the popup for each building
-            return L.Util.template('<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p></div>', layer.feature.properties);
+            return L.Util.template(
+                '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p></div>',
+                layer.feature.properties);
         });
+
+
+        //inserts generic searchbar
+        var arcgisOnline = L.esri.Geocoding.arcgisOnlineProvider();
+        L.esri.Geocoding.geosearch({
+            providers: [
+                arcgisOnline,
+                L.esri.Geocoding.featureLayerProvider({
+                    url: 'https://gismaps.osu.edu/arcgis/rest/services/AGOL/BasemapAsFeatures/MapServer/33',
+                    searchFields: ['ComName', 'Address','BLDG_NAME','City'],
+                    label: 'Ohio State Buildings',
+                    bufferRadius: 5000,
+                    formatSuggestion: function (feature) {
+                        // search results 
+                        // cut "+ ' - ' + feature.properties.BuildMaint" but may want to readd it
+                        return feature.properties.ComName;
+                    }
+                })
+            ]
+        }).addTo(map);
     </script>
 
 </body>
