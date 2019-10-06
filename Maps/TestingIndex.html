@@ -56,7 +56,7 @@
         var map = L.map('map').setView([40.000823481406954, -83.02537039514612], 15);
 
         //Sets basemap color and features 
-        L.esri.basemapLayer('Gray').addTo(map);
+        L.esri.basemapLayer('DarkGray').addTo(map);
 
         //creates variable "buildings" and gives it the value of the specific mapserver(buildings)
         var buildings = L.esri.featureLayer({
@@ -115,6 +115,8 @@
                 })
             ]
         }).addTo(map);
+
+        
     </script>
 
 </body>
