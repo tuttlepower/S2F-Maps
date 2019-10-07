@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>S2F Map</title>
+    <title>Test Map</title>
 
     <!-- Inserts block O to nav bar -->
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
@@ -96,10 +96,11 @@
                 '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p></div>',
                 layer.feature.properties);
         });
-        
+
         //inserts generic searchbar
         var arcgisOnline = L.esri.Geocoding.arcgisOnlineProvider();
         L.esri.Geocoding.geosearch({
+            useMapBounds: false,
             providers: [
                 arcgisOnline,
                 L.esri.Geocoding.featureLayerProvider({
@@ -116,7 +117,14 @@
             ]
         }).addTo(map);
 
-        
+        // Show feature and popup when selected 
+        arcgisOnline.on("results", function (data) {
+            if (data.results && data.results[0].properties.FID) {
+                clusterLayer.once('load', function () {
+                    clusterLayer.getFeature(data.results[0].properties.FID).openPopup();
+                });
+            }
+        });
     </script>
 
 </body>
