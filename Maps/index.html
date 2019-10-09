@@ -100,6 +100,7 @@
         //inserts generic searchbar
         var arcgisOnline = L.esri.Geocoding.arcgisOnlineProvider();
         L.esri.Geocoding.geosearch({
+            useMapBounds: false,
             providers: [
                 arcgisOnline,
                 L.esri.Geocoding.featureLayerProvider({
