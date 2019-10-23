@@ -52,6 +52,10 @@
     <div id="map"></div>
 
     <script>
+        //Leaflet Copypasta
+
+        //End leaflet copypasta
+
         //creates variable called map and sets the view to Ohio State's campus(latlong) with a zoom level of 15
         var map = L.map('map').setView([40.000823481406954, -83.02537039514612], 15);
 
@@ -110,7 +114,7 @@
                     searchFields: ['ComName', 'Address', 'BLDG_NAME', 'City'],
                     label: 'Ohio State Buildings',
                     bufferRadius: 5000,
-                    
+
                     formatSuggestion: function (feature) {
                         // search results 
                         // cut "+ ' - ' + feature.properties.BuildMaint" but may want to re-add it
@@ -120,10 +124,6 @@
             ]
         }).addTo(map);
         // Show feature and popup when selected
-        
-    
-
-
     </script>
 
 </body>
