@@ -81,7 +81,10 @@
                     };
                 }
             },
+            
         });
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+		layer.bringToFront();
 
         //binds popups to the buildings layer
         buildings.bindPopup(function (layer) {
