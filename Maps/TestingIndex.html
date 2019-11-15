@@ -30,6 +30,8 @@
         integrity="sha512-uK5jVwR81KVTGe8KpJa1QIN4n60TsSV8+DPbL5wWlYQvb0/nYNgSOg9dZG6ViQhwx/gaMszuWllTemL+K+IXjg=="
         crossorigin=""></script>
 
+    <script type="text/javascript" src="BuildingJson.js"></script>
+
 
     <style>
         body {
@@ -90,11 +92,15 @@
 
         //binds popups to the buildings layer
         buildings.bindPopup(function (layer) {
+            for (i in buildingJSON) {
+                if (Number(layer.feature.properties.BldgNumber) == buildingJSON[i].BuildingNumber) {
+                    return L.Util.template(
+                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p> <p><b>Work Order System:</b>  <a href="'+buildingJSON[i].WOSystem+'">CMS</a></p></div>',
+                        layer.feature.properties);
 
-            //this determines what goes inside the popup for each building
-            return L.Util.template(
-                '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p><br><p><b>Building Number :</b> {BldgNumber}</p></div>',
-                layer.feature.properties);
+
+                }
+            }
         });
 
         //inserts generic searchbar
