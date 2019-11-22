@@ -100,7 +100,7 @@
                 }
                 if (layer.feature.properties.BuildMaint === 'OSUWMC') {
                     return L.Util.template(
-                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p><br><p><b>Building Number :</b> {BldgNumber}</p></div>',
+                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p></div>',
                         layer.feature.properties)
                 }
             }
