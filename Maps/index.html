@@ -95,7 +95,7 @@
         //Placeholder
         var Test = L.layerGroup();
 
-        //uses esri basemaplayers to get a light theme and streets
+        //uses esri basemaplayers to get a light theme and streets - need to find different backgrounds to fix zoom issues
         var grayscale = L.esri.basemapLayer('Gray'),
             nationalGeographic = L.esri.basemapLayer('NationalGeographic')
         darkmode = L.esri.basemapLayer('DarkGray');
@@ -103,6 +103,9 @@
         //creates map and sets the view to OSU
         var map = L.map('map', {
             center: [40.000823481406954, -83.02537039514612],
+            minZoom: 2,
+            //allows more zoom, but can break the backgrounds
+            maxZoom: 18,
             zoom: 15,
             layers: [grayscale, buildings, Test]
         });
