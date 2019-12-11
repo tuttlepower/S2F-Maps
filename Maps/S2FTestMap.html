@@ -92,22 +92,48 @@
 
         //binds popups to the buildings layer
         buildings.bindPopup(function (layer) {
-
-        //this determines what goes inside the popup for each building
-        return L.Util.template(
-            '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p><br><p><b>Building Number :</b> {BldgNumber}</p></div>',
-            layer.feature.properties);
-        
-
-
-        
-        //this determines what goes inside the popup for each building
-
-
+            for (i in buildingJSON) {
+                if (Number(layer.feature.properties.BldgNumber) == buildingJSON[i].BuildingNumber) {
+                    return L.Util.template(
+                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p> <p><b>Work Order System:</b>  <a href="' +
+                        buildingJSON[i].WOSystem + '" target="_blank" >CMS</a></p></div>',
+                        layer.feature.properties);
+                }
+                if (layer.feature.properties.BuildMaint === 'OSUWMC') {
+                    return L.Util.template(
+                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p></div>',
+                        layer.feature.properties)
+                }
+            }
 
         });
         //Placeholder
-        var Test = L.layerGroup();
+
+        var littleton = L.marker([40.00082348140696, -83.025370395147]).bindPopup('This is a test'),
+            denver = L.marker([40.1, -83.02537039532]).bindPopup('This is a test'),
+            aurora = L.marker([40.00348141, -83.025382]).bindPopup('This is a test.'),
+            poly = L.polygon([
+                [40.000823481406954, -83.02537039514612],
+                [40.000923481406954, -83.025370397612],
+                [40.000823481406954, -82.02537039515]
+            ]),
+            circle1 = L.circle([40.000823481406954, -83.025370396], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                interactive: false,
+                radius: 500
+            }),
+            golden1 = L.circle([40.000823481406954, -83.02537039514612], {
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.5,
+                interactive: false,
+                radius: 5000
+            }),
+
+            cities = L.layerGroup([littleton, denver, aurora, circle1]),
+            Test = L.layerGroup([golden1,poly]);
 
         //uses esri basemaplayers to get a light theme and streets
         var grayscale = L.esri.basemapLayer('Gray'),
@@ -118,7 +144,7 @@
         var map = L.map('map', {
             center: [40.000823481406954, -83.02537039514612],
             zoom: 15,
-            layers: [grayscale, buildings, Test]
+            layers: [grayscale, buildings, ]
         });
 
         //gives different basemap options
@@ -131,7 +157,8 @@
         //different layers can be placed here, allowing them to be seen and hidden 
         var overlays = {
             //"buildings": buildings,
-            "Test": Test
+            "Test": Test,
+            "cities": cities
         };
 
         //inserts layers to map
