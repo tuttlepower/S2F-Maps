@@ -100,7 +100,7 @@
                 }
                 if (layer.feature.properties.BuildMaint === 'OSUWMC') {
                     return L.Util.template(
-                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><br><p><b>Address:</b> {Address}</p><br><p><b>Facility Type:</b> {BuildMaint}</p><br><p><b>Zone :</b> {Zone}</p><br><p><b>Building Number :</b> {BldgNumber}</p></div>',
+                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p></div>',
                         layer.feature.properties)
                 }
             }
@@ -109,7 +109,7 @@
         //Placeholder
         var Test = L.layerGroup();
 
-        //uses esri basemaplayers to get a light theme and streets
+        //uses esri basemaplayers to get a light theme and streets - need to find different backgrounds to fix zoom issues
         var grayscale = L.esri.basemapLayer('Gray'),
             nationalGeographic = L.esri.basemapLayer('NationalGeographic')
         darkmode = L.esri.basemapLayer('DarkGray');
@@ -117,6 +117,9 @@
         //creates map and sets the view to OSU
         var map = L.map('map', {
             center: [40.000823481406954, -83.02537039514612],
+            minZoom: 2,
+            //allows more zoom, but can break the backgrounds
+            maxZoom: 18,
             zoom: 15,
             layers: [grayscale, buildings, Test]
         });
