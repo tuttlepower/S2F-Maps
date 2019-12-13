@@ -54,6 +54,27 @@
     <div id="map"></div>
 
     <script>
+        //testing layers with shapes 
+        var circle = L.circle([40.000823481406954, -83.02537039514612], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: 200,
+                interactive: false,
+            }),
+            circle1 = L.circle([40, -83], {
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.5,
+                radius: 700,
+                interactive: false,
+            }),
+            trash = L.esri.featureLayer({
+                url:'https://gismaps.osu.edu/arcgis/rest/services/AGOL/BasemapAsFeatures/MapServer/31'
+
+            });
+        //groups shapes into same layer    
+        var shapeTest = L.layerGroup([circle, circle1, trash ]);
         //creates a layer for buildings
         var buildings = L.esri.featureLayer({
             //imports data from OSU's buildings database
@@ -93,12 +114,17 @@
         //binds popups to the buildings layer
         buildings.bindPopup(function (layer) {
             for (i in buildingJSON) {
-                //var i = 12;
+                var GISBuildingNumber = Number(layer.feature.properties.BldgNumber);
+                var JSONBuildingNumber = buildingJSON[i].BuildingNumber;
+                var CommonName = layer.feature.properties.ComName;
+                var MaintenanceShop = buildingJSON[i].MaintenanceShop;
+
 
                 if (Number(layer.feature.properties.BldgNumber) == buildingJSON[i].BuildingNumber) {
                     return L.Util.template(
 
-                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p> <p><b>Work Order System:</b>  <a href="' +
+                        '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p> <p><b>Work Order System:</b>' +
+                        MaintenanceShop + CommonName + '  <a href="' +
                         buildingJSON[i].WOSystem + '" target="_blank" >CMS</a></p></div>',
                         layer.feature.properties);
                 }
@@ -107,11 +133,13 @@
                         '<div style="line-height:0"><h3>{ComName}</h3><img src="{Link}" height="135px" width="240px"><p><b>Address:</b> {Address}</p><p><b>Facility Type:</b> {BuildMaint}</p><p><b>Zone :</b> {Zone}</p><p><b>Building Number :</b> {BldgNumber}</p></div>',
                         layer.feature.properties)
                 }
+
             }
 
         });
         //Placeholder
         var Test = L.layerGroup();
+
 
         //uses esri basemaplayers to get a light theme and streets
         var grayscale = L.esri.basemapLayer('Gray'),
@@ -135,7 +163,8 @@
         //different layers can be placed here, allowing them to be seen and hidden 
         var overlays = {
             //"buildings": buildings,
-            "Test": Test
+            "Test": Test,
+            "Shapes": shapeTest,
         };
 
         //inserts layers to map
