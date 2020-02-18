@@ -10,11 +10,11 @@
         href="http://www.osu.edu/assets/web/navbar/osu_navbar/images/favicon.ico" />
 
     <!-- Load Leaflet from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
         integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
         crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
         crossorigin=""></script>
 
     <!-- Load Esri Leaflet from CDN -->
@@ -30,6 +30,7 @@
         integrity="sha512-uK5jVwR81KVTGe8KpJa1QIN4n60TsSV8+DPbL5wWlYQvb0/nYNgSOg9dZG6ViQhwx/gaMszuWllTemL+K+IXjg=="
         crossorigin=""></script>
     <script type="text/javascript" src="BuildingJson.js"></script>
+    
 
 
     <style>
@@ -45,12 +46,48 @@
             right: 0;
             left: 0;
         }
+
+        #info-pane {
+            position: absolute;
+            top: 70px;
+            right: 10px;
+            z-index: 400;
+            padding: 1em;
+            background: white;
+        }
+
+        #query {
+            position: absolute;
+            top: 130px;
+            right: 10px;
+            z-index: 1000;
+            background: white;
+            padding: 1em;
+        }
+
+        #query select {
+            font-size: 16px;
+        }
     </style>
 </head>
 
 <body>
 
     <div id="map"></div>
+    <div id="info-pane" class="leaflet-bar">Hover to Inspect</div>
+    <div id="query" class="leaflet-bar">
+        <label>
+            Zoning District:
+            <select id="district">
+                <!-- make sure to encase string values in single quotes for valid sql -->
+                <option value="1=1">All</option>
+                <option value="BuildMaint ='FOD'">FOD</option>
+                <option value="BuildMaint='Student Life'">Student Life</option>
+                <option value="BuildMaint='OSUWMC'">OSUWMC</option>
+                <option value="BuildMaint='CampusParc'">CampusParc</option>
+            </select>
+        </label>
+    </div>
 
     <script>
         //creates a layer for buildings
@@ -61,8 +98,7 @@
             precision: 5,
             weight: .3,
             //opacity:1,
-            fillOpacity: .5,
-            color: 'white',
+            fillOpacity: .4,
 
             //assigns colors to different building entities based on maintenance shop
             style: function (feature) {
@@ -88,7 +124,35 @@
                     };
                 }
             },
+            
+        });var zoningDistrict = document.getElementById('district');
+
+zoningDistrict.addEventListener('change', function () {
+    zoning.setWhere(zoningDistrict.value);
+});
+
+        //////////////////////////////////////////////////////////////
+        buildings.on('mouseout', function (e) {
+            document.getElementById('info-pane').innerHTML = 'Hover Over Building:';
+            buildings.resetFeatureStyle(oldId);
         });
+
+        buildings.on('mouseover', function (e) {
+            oldId = e.layer.feature.id;
+            document.getElementById('info-pane').innerHTML = e.layer.feature.properties.ComName + ' ' + e.layer
+                .feature.properties.BuildMaint;
+            buildings.setFeatureStyle(e.layer.feature.id, {
+
+                color: "black",
+                weight: 2,
+                opacity: 1
+            });
+        });
+
+        ////////////////////////////////////////////////////////////
+        
+        ////////////////////////////////////////////////////////////
+
         //binds popups to the buildings layer
         buildings.bindPopup(function (layer) {
             for (i in buildingJSON) {
@@ -107,34 +171,9 @@
 
         });
         //Placeholder
+        var Test = L.layerGroup();
 
-        var littleton = L.marker([40.00082348140696, -83.025370395147]).bindPopup('This is a test'),
-            denver = L.marker([40.1, -83.02537039532]).bindPopup('This is a test'),
-            aurora = L.marker([40.00348141, -83.025382]).bindPopup('This is a test.'),
-            poly = L.polygon([
-                [40.000823481406954, -83.02537039514612],
-                [40.000923481406954, -83.025370397612],
-                [40.000823481406954, -82.02537039515]
-            ]),
-            circle1 = L.circle([40.000823481406954, -83.025370396], {
-                color: 'red',
-                fillColor: '#f03',
-                fillOpacity: 0.5,
-                interactive: false,
-                radius: 500
-            }),
-            golden1 = L.circle([40.000823481406954, -83.02537039514612], {
-                color: 'blue',
-                fillColor: 'blue',
-                fillOpacity: 0.5,
-                interactive: false,
-                radius: 5000
-            }),
-
-            cities = L.layerGroup([littleton, denver, aurora, circle1]),
-            Test = L.layerGroup([golden1, poly]);
-
-        //uses esri basemaplayers to get a light theme and streets
+        //uses esri basemaplayers to get a light theme and streets - need to find different backgrounds to fix zoom issues
         var grayscale = L.esri.basemapLayer('Gray'),
             nationalGeographic = L.esri.basemapLayer('NationalGeographic')
         darkmode = L.esri.basemapLayer('DarkGray');
@@ -142,8 +181,11 @@
         //creates map and sets the view to OSU
         var map = L.map('map', {
             center: [40.000823481406954, -83.02537039514612],
+            minZoom: 2,
+            //allows more zoom, but can break the backgrounds
+            maxZoom: 18,
             zoom: 15,
-            layers: [grayscale, buildings, ]
+            layers: [grayscale, buildings, Test]
         });
 
         //gives different basemap options
@@ -156,8 +198,7 @@
         //different layers can be placed here, allowing them to be seen and hidden 
         var overlays = {
             //"buildings": buildings,
-            "Test": Test,
-            "cities": cities
+            "Test": Test
         };
 
         //inserts layers to map

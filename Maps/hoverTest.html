@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Simplifying complex features</title>
+  <title>Querying features</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
 
   <!-- Load Leaflet from CDN -->
@@ -28,51 +28,55 @@
 </head>
 <body>
 
+<!-- Load Esri Leaflet Renderers plugin to use feature service symbology -->
+<script src="https://unpkg.com/esri-leaflet-renderers@2.0.6"></script>
+
 <style>
-  #info-pane {
+  #query {
     position: absolute;
     top: 10px;
     right: 10px;
-    z-index: 400;
-    padding: 1em;
+    z-index: 1000;
     background: white;
+    padding: 1em;
+  }
+
+  #query select {
+    font-size: 16px;
   }
 </style>
 
 <div id="map"></div>
-<div id="info-pane" class="leaflet-bar">Hover to Inspect</div>
+
+<div id="query" class="leaflet-bar">
+  <label>
+    Zoning District:
+    <select id="district">
+      <!-- make sure to encase string values in single quotes for valid sql -->
+      <option value="1=1">All</option>
+                <option value="BuildMaint ='FOD'">FOD</option>
+                <option value="BuildMaint='Student Life'">Student Life</option>
+                <option value="BuildMaint='OSUWMC'">OSUWMC</option>
+                <option value="BuildMaint='CampusParc'">CampusParc</option>
+    </select>
+  </label>
+</div>
 
 <script>
-  var map = L.map('map').setView([40.000823481406954, -83.02537039514612], 9);
+  var map = L.map('map').setView([40.000823481406954, -83.02537039514612], 15);
 
   L.esri.basemapLayer('Gray').addTo(map);
 
-  var zipcodes = L.esri.featureLayer({
-    url: 'https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_ZIP_Codes/FeatureServer/0',
-    simplifyFactor: 0.35,
-    precision: 5,
-    fields: ['FID', 'ZIP', 'PO_NAME'],
-    style: {
-      color: '#A9A9A9',
-      weight: 1
-    }
+  var zoning = L.esri.featureLayer({
+    url: 'https://gismaps.osu.edu/arcgis/rest/services/AGOL/BasemapAsFeatures/MapServer/33',
+    simplifyFactor: 0.5,
+    precision: 4
   }).addTo(map);
 
-  var oldId;
+  var zoningDistrict = document.getElementById('district');
 
-  zipcodes.on('mouseout', function (e) {
-    document.getElementById('info-pane').innerHTML = 'Hover to Inspect';
-    zipcodes.resetFeatureStyle(oldId);
-  });
-
-  zipcodes.on('mouseover', function (e) {
-    oldId = e.layer.feature.id;
-    document.getElementById('info-pane').innerHTML = e.layer.feature.properties.ZIP + ' ' + e.layer.feature.properties.PO_NAME;
-    zipcodes.setFeatureStyle(e.layer.feature.id, {
-      color: '#9D78D2',
-      weight: 3,
-      opacity: 1
-    });
+  zoningDistrict.addEventListener('change', function () {
+    zoning.setWhere(zoningDistrict.value);
   });
 </script>
 

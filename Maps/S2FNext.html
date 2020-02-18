@@ -100,7 +100,7 @@
             },
         });
         buildings.on('mouseout', function (e) {
-            document.getElementById('info-pane').innerHTML = 'Hover to Inspect';
+            document.getElementById('info-pane').innerHTML = 'Hover Over Building:';
             buildings.resetFeatureStyle(oldId);
         });
 
@@ -109,8 +109,9 @@
             document.getElementById('info-pane').innerHTML = e.layer.feature.properties.ComName + ' ' + e.layer
                 .feature.properties.BuildMaint;
             buildings.setFeatureStyle(e.layer.feature.id, {
-                color: '#9D78D2',
-                weight: 3,
+                
+                color: "black",
+                weight: 2,
                 opacity: 1
             });
         });
